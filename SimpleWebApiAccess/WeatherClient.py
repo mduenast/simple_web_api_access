@@ -78,13 +78,29 @@ class WeatherClient(object):
         pass
 
     def forecastJson(self,location):
-        pass
+        # baixar-se la pagina web
+        url = WeatherClient.url_base + self.api_key + \
+              WeatherClient.url_service["forecast"] + location + ".json"
+        f = urllib2.urlopen(url)
+        response = f.read()
+        f.close()
+
+        decoded = json.loads(response)
+        return 
 
     def conditionsXml(self,location):
         pass
 
     def conditionsJson(self,location):
-        pass
+        # baixar-se la pagina web
+        url = WeatherClient.url_base + self.api_key + \
+              WeatherClient.url_service["conditions"] + location + ".json"
+        f = urllib2.urlopen(url)
+        response = f.read()
+        f.close()
+
+        decoded = json.loads(response)
+        return decoded
 
 if __name__ == "__main__":
     if not api_key:
@@ -108,3 +124,10 @@ if __name__ == "__main__":
     wc = WeatherClient(api_key)
     if resource == "almanac":
         print wc.almanacJson(location)
+    elif resource == "forecast":
+        print wc.forecastJson(location)
+    elif resource == "conditions":
+        print wc.conditionsJson(location)
+    else:
+        print "Recurs desconegut"
+        sys.exit(-1)
