@@ -93,14 +93,14 @@ class WeatherClient(object):
         f.close()
 
         decoded = json.loads(response)
-        prediction_forecast = {}
+        forecast = {}
         for forecastday in decoded["forecast"]["txt_forecast"]["forecastday"]:
             partial = {}
             partial["title"] = str(forecastday["title"])
             partial["fcttext"] = str(forecastday["fcttext"])
             partial["fcttext_metric"] = str(forecastday["fcttext_metric"])
-            prediction_forecast[str(partial["title"])] = str(partial)
-        return prediction_forecast
+            forecast[str(partial["title"])] = str(partial)
+        return forecast
 
     def conditionsXml(self,location):
         pass
@@ -114,7 +114,17 @@ class WeatherClient(object):
         f.close()
 
         decoded = json.loads(response)
-        return decoded["current_observation"]
+        conditions ={}
+        conditions["weather"] = str(decoded["current_observation"]["weather"])
+        conditions["temperature_String"] =  str(decoded["current_observation"]["temperature_string"])
+        conditions["relative_humidity"] =  str(decoded["current_observation"]["relative_humidity"])
+        conditions["wind_string"] =  str(decoded["current_observation"]["wind_string"])
+        conditions["dewpoint_string"] =  str(decoded["current_observation"]["dewpoint_string"])
+        conditions["heat_index_string"] =  str(decoded["current_observation"]["heat_index_string"])
+        conditions["feelslike_string"] =  str(decoded["current_observation"]["feelslike_string"])
+        conditions["precip_1hr_string"] = str(decoded["current_observation"]["precip_1hr_string"])
+        conditions["precip_today_string"] = str(decoded["current_observation"]["precip_today_string"])
+        return conditions
 
     def hourlyXml(self,location):
         pass
