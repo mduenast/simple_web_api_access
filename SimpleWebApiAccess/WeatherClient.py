@@ -6,6 +6,7 @@ import sys
 import urllib2
 import json
 from bs4 import BeautifulSoup
+import WeatherClientPrinter
 
 api_key = None
 resource = None
@@ -65,16 +66,16 @@ class WeatherClient(object):
 
         decoded = json.loads(response)
         maximes = decoded["almanac"]["temp_high"]
-        normal = maximes["normal"]["C"]
-        record = maximes["record"]["C"]
+        normal = str(maximes["normal"]["C"])
+        record = str(maximes["record"]["C"])
 
         minimes = decoded["almanac"]["temp_low"]
-        normal2 = minimes["normal"]["C"]
-        record2 = minimes["record"]["C"]
+        normal2 = str(minimes["normal"]["C"])
+        record2 = str(minimes["record"]["C"])
 
         # retornar els resultats
-        return {"maximes": {"normal ": int(normal), "record": int(record)}, \
-                "minimes": {"normal": int(normal2), "record": int(record2)}}
+        return {"maximes": {"normal ": normal, "record": record}, \
+                "minimes": {"normal": normal2, "record": record2}}
 
     def forecastXml(self,location):
         pass
@@ -163,6 +164,7 @@ class WeatherClient(object):
         return hourly
 
 if __name__ == "__main__":
+    wcp = WeatherClientPrinter.WeatherClientPrinter()
     if not api_key:
         try:
             api_key = sys.argv[1]
@@ -183,13 +185,17 @@ if __name__ == "__main__":
             sys.exit(-1)
     wc = WeatherClient(api_key)
     if resource == "almanac":
-        print wc.almanacJson(location)
+        #print wc.almanacJson(location)
+        wcp.printAlmanacJson(wc.almanacJson(location))
     elif resource == "forecast":
-        print wc.forecastJson(location)
+        #print wc.forecastJson(location)
+        wcp.printForecastJson(wc.forecastJson(location))
     elif resource == "conditions":
-        print wc.conditionsJson(location)
+        #print wc.conditionsJson(location)
+        wcp.printConditionsJson(wc.conditionsJson(location))
     elif resource == "hourly":
-        print wc.hourlyJson(location)
+        #print wc.hourlyJson(location)
+        wcp.printHourlyJson(wc.hourlyJson(location))
     else:
         print "Recurs desconegut"
         sys.exit(-1)
