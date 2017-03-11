@@ -99,13 +99,18 @@ class WeatherClient(object):
             partial["title"] = str(forecastday["title"])
             partial["fcttext"] = str(forecastday["fcttext"])
             partial["fcttext_metric"] = str(forecastday["fcttext_metric"])
-            forecast[str(partial["title"])] = str(partial)
+            forecast[str(partial["title"])] = partial
         return forecast
 
     def conditionsXml(self,location):
         pass
 
     def conditionsJson(self,location):
+        """
+        Retorna les condicions ambientals.
+        :param location:
+        :return:
+        """
         # baixar-se la pagina web
         url = WeatherClient.url_base + self.api_key + \
               WeatherClient.url_service["conditions"] + location + ".json"
@@ -138,7 +143,24 @@ class WeatherClient(object):
         f.close()
 
         decoded = json.loads(response)
-        return decoded
+        hourly = {}
+        for hourly_forecast in decoded["hourly_forecast"]:
+            partial = {}
+            partial["hour"] = str(hourly_forecast["FCTTIME"]["hour"])
+            partial["temp"] = str(hourly_forecast["temp"]["metric"])
+            partial["dewpoint"] = str(hourly_forecast["dewpoint"]["metric"])
+            partial["condition"] = str(hourly_forecast["condition"])
+            partial["sky"] = str(hourly_forecast["sky"])
+            partial["wspd"] = str(hourly_forecast["wspd"]["metric"])
+            partial["wdir"] = str(hourly_forecast["wdir"]["degrees"])
+            partial["humidity"] = str(hourly_forecast["humidity"])
+            partial["feelslike"] = str(hourly_forecast["feelslike"]["metric"])
+            partial["qpf"] = str(hourly_forecast["qpf"]["metric"])
+            partial["snow"] = str(hourly_forecast["snow"]["metric"])
+            partial["pop"] = str(hourly_forecast["pop"])
+            partial["mslp"] = str(hourly_forecast["mslp"]["metric"])
+            hourly[str(hourly_forecast["FCTTIME"]["hour"])] = partial
+        return hourly
 
 if __name__ == "__main__":
     if not api_key:
