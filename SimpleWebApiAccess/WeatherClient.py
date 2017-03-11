@@ -12,12 +12,14 @@ resource = None
 location = None
 
 class WeatherClient(object):
+
     """
         docstring for WeatherClient
     """
     url_base = "http://api.wunderground.com/api/"
     url_service = {"almanac" : "/almanac/q/CA/", "forecast" : "/forecast/q/CA/" \
-        ,"conditions" : "/conditions/q/CA/"}
+        ,"conditions" : "/conditions/q/CA/", "hourly" : "/hourly/q/CA/"}
+
     def __init__(self,api_key):
         super(WeatherClient,self).__init__()
         self.api_key = api_key
@@ -78,6 +80,11 @@ class WeatherClient(object):
         pass
 
     def forecastJson(self,location):
+        """
+        Retorna les prediccions dels proxims 3 dies
+        :param location:
+        :return:
+        """
         # baixar-se la pagina web
         url = WeatherClient.url_base + self.api_key + \
               WeatherClient.url_service["forecast"] + location + ".json"
@@ -86,7 +93,14 @@ class WeatherClient(object):
         f.close()
 
         decoded = json.loads(response)
-        return 
+        prediction_forecast = {}
+        for forecastday in decoded["forecast"]["txt_forecast"]["forecastday"]:
+            partial = {}
+            partial["title"] = str(forecastday["title"])
+            partial["fcttext"] = str(forecastday["fcttext"])
+            partial["fcttext_metric"] = str(forecastday["fcttext_metric"])
+            prediction_forecast[str(partial["title"])] = str(partial)
+        return prediction_forecast
 
     def conditionsXml(self,location):
         pass
@@ -95,6 +109,20 @@ class WeatherClient(object):
         # baixar-se la pagina web
         url = WeatherClient.url_base + self.api_key + \
               WeatherClient.url_service["conditions"] + location + ".json"
+        f = urllib2.urlopen(url)
+        response = f.read()
+        f.close()
+
+        decoded = json.loads(response)
+        return decoded["current_observation"]
+
+    def hourlyXml(self,location):
+        pass
+
+    def hourlyJson(self,location):
+        # baixar-se la pagina web
+        url = WeatherClient.url_base + self.api_key + \
+              WeatherClient.url_service["hourly"] + location + ".json"
         f = urllib2.urlopen(url)
         response = f.read()
         f.close()
@@ -128,6 +156,8 @@ if __name__ == "__main__":
         print wc.forecastJson(location)
     elif resource == "conditions":
         print wc.conditionsJson(location)
+    elif resource == "hourly":
+        print wc.hourlyJson(location)
     else:
         print "Recurs desconegut"
         sys.exit(-1)
